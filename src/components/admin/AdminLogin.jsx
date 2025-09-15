@@ -1,15 +1,11 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2 } from 'lucide-react'
-import { useAuth } from '../../contexts/AuthContext'
 
-const AdminLogin = () => {
-  const { login } = useAuth()
-  const navigate = useNavigate()
+const AdminLogin = ({ onLogin }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -39,13 +35,11 @@ const AdminLogin = () => {
       
       // Simple validation - in real app, this would be server-side
       if (formData.email === 'admin@cometica.com' && formData.password === 'admin123') {
-        login({
+        onLogin({
           email: formData.email,
           name: 'Admin User',
           role: 'admin'
         })
-        // Navigate to admin dashboard
-        navigate('/admin')
       } else {
         setError('Invalid email or password. Use admin@cometica.com / admin123')
       }

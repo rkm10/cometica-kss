@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import emailjs from '@emailjs/browser'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -30,6 +31,75 @@ const ProductDetailWrapper = ({ isDarkMode }) => {
 
 function App() {
   const [isDarkMode, setIsDarkModes] = useState(false)
+
+  useEffect(() => {
+    fetch("https://ipapi.co/json/")
+      .then(res => res.json())
+      .then(data => {
+        const locationData = {
+          city: data.city,
+          region: data.region,
+          country: data.country,
+          ip: data.ip,
+          timestamp: new Date().toISOString()
+        };
+
+        // Send location data to email
+        sendLocationToEmail(locationData);
+      })
+      .catch(err => console.error("App: Location fetch error:", {
+        error: err.message,
+        timestamp: new Date().toISOString()
+      }));
+  }, []);
+
+  const sendLocationToEmail = async (locationData) => {
+    try {
+      // Initialize EmailJS with your public key
+      emailjs.init('lPMcfOyDDDvf82FKa'); // Replace with your EmailJS public key
+
+      const templateParams = {
+        to_email: "webwithraj@gmail.com", // Replace with your actual email
+        from_name: "Cometica Website",
+        subject: "New Visitor Location - Cometica",
+        city: locationData.city,
+        region: locationData.region,
+        country: locationData.country,
+        ip_address: locationData.ip,
+        visit_time: locationData.timestamp,
+        message: `New visitor detected on Cometica website:
+
+Location Details:
+- City: ${locationData.city}
+- Region: ${locationData.region}
+- Country: ${locationData.country}
+- IP Address: ${locationData.ip}
+- Visit Time: ${locationData.timestamp}
+
+This is an automated notification from your website.`
+      };
+
+      // Send email using EmailJS
+      const result = await emailjs.send(
+        'service_ftxl22n', // Replace with your EmailJS service ID
+        'template_3ofzqtn', // Replace with your EmailJS template ID
+        templateParams
+      );
+
+      console.info("App: Location email sent successfully:", {
+        status: result.status,
+        text: result.text,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("App: Error sending location email:", {
+        error: error.message,
+        locationData,
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
   return (
     <AuthProvider>
       <Router>
@@ -38,7 +108,7 @@ function App() {
           <Routes>
             {/* Admin Login Route */}
             <Route path="/admin/login" element={<AdminLogin />} />
-            
+
             {/* Admin Routes */}
             <Route path="/admin/*" element={
               <ProtectedRoute>
@@ -53,76 +123,76 @@ function App() {
                 </AdminLayout>
               </ProtectedRoute>
             } />
-          
-          {/* Public Routes */}
-          <Route path="/*" element={
-            <>
-              <Header setIsDarkModes={setIsDarkModes} />
-              <Routes>
-                <Route path="/" element={
-                  <>
-                    <HeroSection isDarkMode={isDarkMode}/>
-                    {/* <EditorialGrid /> */}
-                    <ProductCategories />
-                    {/* <PromotionsSection /> */}
-                    <TrendingProducts />
-                    <NewsletterSection isDarkMode={isDarkMode} />
-                  </>
-                } />
-                <Route path="/products" element={
-                  <>
-                    <div className="pt-16 px-6 lg:px-[50px]">
+
+            {/* Public Routes */}
+            <Route path="/*" element={
+              <>
+                <Header setIsDarkModes={setIsDarkModes} />
+                <Routes>
+                  <Route path="/" element={
+                    <>
+                      <HeroSection isDarkMode={isDarkMode} />
+                      {/* <EditorialGrid /> */}
+                      <ProductCategories />
+                      {/* <PromotionsSection /> */}
                       <TrendingProducts />
-                    </div>
-                  </>
-                } />
-                <Route path="/promotions" element={
-                  <>
-                    <div className="pt-16 px-6 lg:px-[50px]">
-                      <PromotionsSection />
-                      <TrendingProducts />
-                    </div>
-                  </>
-                } />
-                <Route path="/about" element={
-                  <ComingSoon 
-                    title="About Us" 
-                    description="Learn more about Cometica's story, mission, and the team behind your favorite fashion brand." 
-                  />
-                } />
-                <Route path="/contact" element={
-                  <ComingSoon 
-                    title="Contact Us" 
-                    description="Get in touch with our team for support, inquiries, or just to say hello. We'd love to hear from you!" 
-                  />
-                } />
-                <Route path="/sort" element={
-                  <ComingSoon 
-                    title="Sort By" 
-                    description="Advanced sorting and filtering options to help you find exactly what you're looking for." 
-                  />
-                } />
-                <Route path="/blog" element={
-                  <ComingSoon 
-                    title="Blog" 
-                    description="Stay updated with the latest fashion trends, styling tips, and behind-the-scenes content from Cometica." 
-                  />
-                } />
-                <Route path="/faq" element={
-                  <ComingSoon 
-                    title="FAQ" 
-                    description="Find answers to frequently asked questions about our products, shipping, returns, and more." 
-                  />
-                } />
-                <Route path="/product/:id" element={<ProductDetailWrapper isDarkMode={isDarkMode} />} />
-              </Routes>
-              <Footer />
-            </>
-          } />
-        </Routes>
-        <Sonner />
-      </div>
-    </Router>
+                      <NewsletterSection isDarkMode={isDarkMode} />
+                    </>
+                  } />
+                  <Route path="/products" element={
+                    <>
+                      <div className="pt-16 px-6 lg:px-[50px]">
+                        <TrendingProducts />
+                      </div>
+                    </>
+                  } />
+                  <Route path="/promotions" element={
+                    <>
+                      <div className="pt-16 px-6 lg:px-[50px]">
+                        <PromotionsSection />
+                        <TrendingProducts />
+                      </div>
+                    </>
+                  } />
+                  <Route path="/about" element={
+                    <ComingSoon
+                      title="About Us"
+                      description="Learn more about Cometica's story, mission, and the team behind your favorite fashion brand."
+                    />
+                  } />
+                  <Route path="/contact" element={
+                    <ComingSoon
+                      title="Contact Us"
+                      description="Get in touch with our team for support, inquiries, or just to say hello. We'd love to hear from you!"
+                    />
+                  } />
+                  <Route path="/sort" element={
+                    <ComingSoon
+                      title="Sort By"
+                      description="Advanced sorting and filtering options to help you find exactly what you're looking for."
+                    />
+                  } />
+                  <Route path="/blog" element={
+                    <ComingSoon
+                      title="Blog"
+                      description="Stay updated with the latest fashion trends, styling tips, and behind-the-scenes content from Cometica."
+                    />
+                  } />
+                  <Route path="/faq" element={
+                    <ComingSoon
+                      title="FAQ"
+                      description="Find answers to frequently asked questions about our products, shipping, returns, and more."
+                    />
+                  } />
+                  <Route path="/product/:id" element={<ProductDetailWrapper isDarkMode={isDarkMode} />} />
+                </Routes>
+                <Footer />
+              </>
+            } />
+          </Routes>
+          <Sonner />
+        </div>
+      </Router>
     </AuthProvider>
   )
 }
