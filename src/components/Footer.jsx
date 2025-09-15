@@ -48,7 +48,7 @@ const Footer = () => {
               find perfect pieces for your wardrobe, and enjoy seamless online shopping.
             </p>
             <p className="text-muted-foreground text-sm">
-              © 2024 RAJKUMAR. All rights reserved.
+              © 2025 RAJKUMAR. All rights reserved.
             </p>
           </div>
 
