@@ -76,8 +76,8 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600">Welcome to the Cometica admin panel</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-300">Welcome to the Cometica admin panel</p>
       </div>
 
       {/* Dashboard Statistics Cards */}
@@ -197,22 +197,22 @@ const AdminDashboard = () => {
               <div className="flex items-center space-x-4">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">New product added</p>
-                  <p className="text-xs text-gray-500">Blue Jeans - 2 minutes ago</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">New product added</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Blue Jeans - 2 minutes ago</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Product updated</p>
-                  <p className="text-xs text-gray-500">T-Shirt Green Kids - 1 hour ago</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Product updated</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">T-Shirt Green Kids - 1 hour ago</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Promotion created</p>
-                  <p className="text-xs text-gray-500">50% OFF Sale - 3 hours ago</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Promotion created</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">50% OFF Sale - 3 hours ago</p>
                 </div>
               </div>
             </div>
