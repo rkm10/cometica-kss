@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Menu, X, Sun, Moon, Search } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+import SearchDrawer from './SearchDrawer'
 
 const Header = ({setIsDarkModes}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [isTransparent, setIsTransparent] = useState(true)
   const location = useLocation()
@@ -35,8 +37,8 @@ const Header = ({setIsDarkModes}) => {
   }, [isDarkMode, setIsDarkModes])
 
   useEffect(() => {
-    // Handle body scroll lock when menu is open
-    if (isMenuOpen) {
+    // Handle body scroll lock when menu or search is open
+    if (isMenuOpen || isSearchOpen) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = 'unset'
@@ -46,24 +48,34 @@ const Header = ({setIsDarkModes}) => {
     return () => {
       document.body.style.overflow = 'unset'
     }
-  }, [isMenuOpen])
+  }, [isMenuOpen, isSearchOpen])
 
   useEffect(() => {
-    // Handle escape key to close menu
-    const handleEscape = (e) => {
-      if (e.key === 'Escape' && isMenuOpen) {
-        setIsMenuOpen(false)
+    // Handle keyboard shortcuts
+    const handleKeyDown = (e) => {
+      // Escape key to close menu or search
+      if (e.key === 'Escape') {
+        if (isMenuOpen) {
+          setIsMenuOpen(false)
+        }
+        if (isSearchOpen) {
+          setIsSearchOpen(false)
+        }
+      }
+      
+      // Ctrl+K or Cmd+K to open search
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsSearchOpen(true)
       }
     }
 
-    if (isMenuOpen) {
-      document.addEventListener('keydown', handleEscape)
-    }
+    document.addEventListener('keydown', handleKeyDown)
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
+      document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isMenuOpen])
+  }, [isMenuOpen, isSearchOpen])
 
   useEffect(() => {
     // Handle scroll to make header transparent on hero section (only on home page)
@@ -186,11 +198,15 @@ const Header = ({setIsDarkModes}) => {
                >
                 {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </button>
-              <button className={`transition-colors ${
-                isTransparent 
-                  ? (isDarkMode ? 'text-white group-hover:text-white' : 'text-white group-hover:text-black') 
-                  : 'text-foreground group-hover:text-muted-foreground'
-              }`}>
+              <button 
+                onClick={() => setIsSearchOpen(true)}
+                className={`transition-all duration-300 hover:scale-110 hover:rotate-12 ${
+                  isTransparent 
+                    ? (isDarkMode ? 'text-white group-hover:text-white' : 'text-white group-hover:text-black') 
+                    : 'text-foreground group-hover:text-muted-foreground'
+                } ${isSearchOpen ? 'animate-pulse' : ''}`}
+                title="Search Products (Ctrl+K)"
+              >
                 <Search className="h-5 w-5" />
               </button>
             </div>
@@ -255,6 +271,12 @@ const Header = ({setIsDarkModes}) => {
           </div>
         </div>
       </div>
+
+      {/* Search Drawer */}
+      <SearchDrawer 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)} 
+      />
     </>
   )
 }

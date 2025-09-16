@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { 
   LayoutDashboard, 
   Package, 
@@ -21,7 +22,22 @@ const AdminLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
   const { user, logout } = useAuth()
+
+  const handleLogout = () => {
+    // Show logout notification
+    toast.success('Successfully logged out!', {
+      description: 'You have been signed out of Cometica Admin',
+      duration: 3000,
+    })
+    
+    // Call logout function
+    logout()
+    
+    // Redirect to login page
+    navigate('/admin/login')
+  }
 
   useEffect(() => {
     // Check for saved theme preference or default to light mode
@@ -129,7 +145,7 @@ const AdminLayout = ({ children }) => {
                 Back to Site
               </Link>
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-200"
               >
                 <LogOut className="mr-3 h-5 w-5" />
@@ -188,7 +204,7 @@ const AdminLayout = ({ children }) => {
               Back to Site
             </Link>
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="flex items-center w-full px-3 py-2 rounded-md text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 dark:hover:text-red-300"
             >
               <LogOut className="mr-3 h-5 w-5" />
@@ -227,7 +243,7 @@ const AdminLayout = ({ children }) => {
                 <User className="h-4 w-4" />
                 <span>{user?.name || 'Admin'}</span>
               </div>
-              <Button variant="ghost" size="icon" onClick={logout} title="Sign Out" className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+              <Button variant="ghost" size="icon" onClick={handleLogout} title="Sign Out" className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                 <LogOut className="h-5 w-5" />
               </Button>
             </div>

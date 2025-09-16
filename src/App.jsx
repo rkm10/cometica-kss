@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import emailjs from '@emailjs/browser'
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import HeroSection from './components/HeroSection'
@@ -20,13 +20,46 @@ import ProductDetail from './components/ProductDetail'
 import ProtectedRoute from './components/ProtectedRoute'
 import ScrollToTop from './components/ScrollToTop'
 import ComingSoon from './components/ComingSoon'
-import { AuthProvider } from './contexts/AuthContext'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { Sonner } from './components/ui/sonner'
 
 // Wrapper component to provide key for ProductDetail
 const ProductDetailWrapper = ({ isDarkMode }) => {
   const location = useLocation()
   return <ProductDetail key={location.pathname} isDarkMode={isDarkMode} />
+}
+
+// Wrapper component for AdminLogin to provide onLogin function and handle redirects
+const AdminLoginWrapper = () => {
+  const { login, isAuthenticated, isLoading } = useAuth()
+  const navigate = useNavigate()
+
+  // If already authenticated, redirect to admin dashboard
+  React.useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      navigate('/admin')
+    }
+  }, [isAuthenticated, isLoading, navigate])
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // If not authenticated, show login form
+  if (!isAuthenticated) {
+    return <AdminLogin onLogin={login} />
+  }
+
+  // This should not render as we redirect above, but just in case
+  return null
 }
 
 function App() {
@@ -86,11 +119,6 @@ This is an automated notification from your website.`
         templateParams
       );
 
-      console.info("App: Location email sent successfully:", {
-        status: result.status,
-        text: result.text,
-        timestamp: new Date().toISOString()
-      });
     } catch (error) {
       console.error("App: Error sending location email:", {
         error: error.message,
@@ -107,7 +135,7 @@ This is an automated notification from your website.`
         <div className="min-h-screen bg-background text-foreground">
           <Routes>
             {/* Admin Login Route */}
-            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/login" element={<AdminLoginWrapper />} />
 
             {/* Admin Routes */}
             <Route path="/admin/*" element={

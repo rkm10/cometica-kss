@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
@@ -6,13 +8,15 @@ import { Label } from '../ui/label'
 import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2 } from 'lucide-react'
 
 const AdminLogin = ({ onLogin }) => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: 'admin@cometica.com',
+    password: 'admin123'
   })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isSuccess, setIsSuccess] = useState(false)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -30,21 +34,42 @@ const AdminLogin = ({ onLogin }) => {
     setError('')
 
     try {
+      // Basic validation first
+      if (!formData.email || !formData.password) {
+        setError('Please enter both email and password')
+        return
+      }
+
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000))
       
       // Simple validation - in real app, this would be server-side
       if (formData.email === 'admin@cometica.com' && formData.password === 'admin123') {
-        onLogin({
-          email: formData.email,
-          name: 'Admin User',
-          role: 'admin'
-        })
+        // Clear any existing errors and show success
+        setError('')
+        setIsSuccess(true)
+        
+        // Call onLogin after a brief success feedback
+        setTimeout(() => {
+          onLogin({
+            email: formData.email,
+            name: 'Admin User',
+            role: 'admin'
+          })
+          // Show success notification
+          toast.success('Successfully logged in!', {
+            description: 'Welcome back to Cometica Admin',
+            duration: 3000,
+          })
+          // Redirect to admin dashboard
+          navigate('/admin')
+        }, 500)
       } else {
-        setError('Invalid email or password. Use admin@cometica.com / admin123')
+        setError('Invalid email or password. Please use the demo credentials below.')
       }
     } catch (err) {
-      setError('Login failed. Please try again.')
+      console.error('Login error:', err)
+      setError('An unexpected error occurred. Please try again.')
     } finally {
       setIsLoading(false)
     }
