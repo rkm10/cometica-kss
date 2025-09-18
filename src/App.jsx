@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import emailjs from '@emailjs/browser'
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -65,68 +64,7 @@ const AdminLoginWrapper = () => {
 function App() {
   const [isDarkMode, setIsDarkModes] = useState(false)
 
-  useEffect(() => {
-    fetch("https://ipapi.co/json/")
-      .then(res => res.json())
-      .then(data => {
-        const locationData = {
-          city: data.city,
-          region: data.region,
-          country: data.country,
-          ip: data.ip,
-          timestamp: new Date().toISOString()
-        };
 
-        // Send location data to email
-        sendLocationToEmail(locationData);
-      })
-      .catch(err => console.error("App: Location fetch error:", {
-        error: err.message,
-        timestamp: new Date().toISOString()
-      }));
-  }, []);
-
-  const sendLocationToEmail = async (locationData) => {
-    try {
-      // Initialize EmailJS with your public key
-      emailjs.init('lPMcfOyDDDvf82FKa'); // Replace with your EmailJS public key
-
-      const templateParams = {
-        to_email: "webwithraj@gmail.com", // Replace with your actual email
-        from_name: "Cometica Website",
-        subject: "New Visitor Location - Cometica",
-        city: locationData.city,
-        region: locationData.region,
-        country: locationData.country,
-        ip_address: locationData.ip,
-        visit_time: locationData.timestamp,
-        message: `New visitor detected on Cometica website:
-
-Location Details:
-- City: ${locationData.city}
-- Region: ${locationData.region}
-- Country: ${locationData.country}
-- IP Address: ${locationData.ip}
-- Visit Time: ${locationData.timestamp}
-
-This is an automated notification from your website.`
-      };
-
-      // Send email using EmailJS
-      const result = await emailjs.send(
-        'service_ftxl22n', // Replace with your EmailJS service ID
-        'template_3ofzqtn', // Replace with your EmailJS template ID
-        templateParams
-      );
-
-    } catch (error) {
-      console.error("App: Error sending location email:", {
-        error: error.message,
-        locationData,
-        timestamp: new Date().toISOString()
-      });
-    }
-  };
 
   return (
     <AuthProvider>
